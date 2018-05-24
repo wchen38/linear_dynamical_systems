@@ -1,8 +1,9 @@
-import xlwt
+import xlsxwriter, pandas, openpyxl
 
 #create workbook and worksheet
-wbk = xlwt.Workbook()
-sheet = wbk.add_sheet('range_parsed')
+workbook = workbook = xlsxwriter.Workbook('Expenses03.csv')
+worksheet = workbook.add_worksheet()
+
 row = 0
 col = 0
 with open('lidar_data.txt', 'r') as f:
@@ -11,11 +12,14 @@ with open('lidar_data.txt', 'r') as f:
 		if 'ranges:' in line:
 			col = 0
 			for word in line.split(" "):
-				data = word.strip('ranges:').strip(',').strip('[').strip(']\n')
-				print data
-				#sheet.write(row,3,L)
+				range_data = word.strip('ranges:').strip(',').strip('[').strip(']\n')
+				#print range_data
+				print col
+				worksheet.write_string(row, col, range_data)
 				col+=1
 			row +=1
-			break
+			print col
+			#break
 
-wbk.save('pared_data.xls')
+workbook.close()
+#wbk.save('pared_data.xls')
