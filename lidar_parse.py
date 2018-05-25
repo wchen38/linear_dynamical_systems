@@ -12,19 +12,29 @@ print "List elements : ", float("0.002312321312312321111")
 #create workbook and worksheet
 #workbook = workbook = xlsxwriter.Workbook('Expenses03.csv')
 #worksheet = workbook.add_worksheet()
-xAxis = numpy.arange(-1.57079637051,1.56643295288,0.00436332309619)
+
 #plt.plot(xAxis, xAxis)
 #plt.show()
+start_angle = -1.57079637051
+end_angle = 1.56643295288
+dA = 0.00436332309619
 
-print len(xAxis)
+
 
 row = 0
 col = 0
-arr = array('f')
+fig = plt.figure()
+fig.suptitle('Angle vs Range', fontsize=14, fontweight='bold')
+
+ax = fig.add_subplot(111)
+ax.set_xlabel('Angle')
+ax.set_ylabel('range')
+counter = 0;
 with open('lidar_data.txt', 'r') as infile:
 	#scans each line of the file to look for keywords
 	for line in infile:
-		
+		x = start_angle
+		arr = array('f')
 		#detect the key word range, which is the data I want to parse.
 		if 'ranges:' in line:
 			
@@ -36,9 +46,13 @@ with open('lidar_data.txt', 'r') as infile:
 				arr.append(float(word.strip()))
 				#print arr
 				#break;
+				x = x + dA
+			xAxis = numpy.arange(start_angle,x,dA)
+			counter+=1
 			plt.plot(xAxis, arr)
-			plt.show()
-			break
+	print counter
+	plt.show()
+			#break
 			
 			
 			
