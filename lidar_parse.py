@@ -1,23 +1,19 @@
 import xlsxwriter, matplotlib.pyplot as plt, numpy, decimal
 from array import array
 
-# pandas, openpyxl
 
-#plt.plot(x,y)
-#plt.show()
+#print("Hello World")
 
-aTuple = [0.002312321312312321, 1.56643295288, 1.56643295288, 1.56643295288];
-aList = list(aTuple)
-print "List elements : ", float("0.002312321312312321111")
-#create workbook and worksheet
-#workbook = workbook = xlsxwriter.Workbook('Expenses03.csv')
-#worksheet = workbook.add_worksheet()
 
-#plt.plot(xAxis, xAxis)
-#plt.show()
+
+
+
+txtFile = raw_input('Enter .txt File Name: ')
+
 start_angle = -1.57079637051
 end_angle = 1.56643295288
 dA = 0.00436332309619
+
 
 
 
@@ -30,7 +26,8 @@ ax = fig.add_subplot(111)
 ax.set_xlabel('Angle')
 ax.set_ylabel('range')
 counter = 0;
-with open('lidar_data.txt', 'r') as infile:
+
+with open(txtFile, 'r') as infile:
 	#scans each line of the file to look for keywords
 	for line in infile:
 		x = start_angle
