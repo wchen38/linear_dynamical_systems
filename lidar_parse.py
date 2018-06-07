@@ -1,4 +1,4 @@
-import xlsxwriter, matplotlib.pyplot as plt, numpy, decimal
+import xlsxwriter, matplotlib.pyplot as plt, numpy, decimal, math
 from array import array
 
 
@@ -20,18 +20,20 @@ dA = 0.00436332309619
 row = 0
 col = 0
 fig = plt.figure()
-fig.suptitle('Angle vs Range', fontsize=14, fontweight='bold')
+fig.suptitle('cylindrical coordinate', fontsize=14, fontweight='bold')
 
 ax = fig.add_subplot(111)
-ax.set_xlabel('Angle')
-ax.set_ylabel('range')
+ax.set_xlabel('x')
+ax.set_ylabel('y')
 counter = 0;
-
+plt.figure(1)
 with open(txtFile, 'r') as infile:
 	#scans each line of the file to look for keywords
 	for line in infile:
 		x = start_angle
 		arr = array('f')
+		arr_x = array('f')
+		arr_y = array('f')
 		#detect the key word range, which is the data I want to parse.
 		if 'ranges:' in line:
 			
@@ -40,14 +42,23 @@ with open(txtFile, 'r') as infile:
 			
 			#store all the data seperated by a space in an array
 			for word in range_data.split(" "):	
-				arr.append(float(word.strip()))
+				arr.append( (float(word.strip())) )
+				arr_x.append( (float(word.strip())) *math.cos(x) )
+				arr_y.append( (float(word.strip())) *math.sin(x) )
+				#arr.insert(0, (float(word.strip())) )
+				#arr_x.insert(0, (float(word.strip())) *math.cos(x) )
+				#arr_y.insert(0, (float(word.strip())) *math.sin(x) )
 				#print arr
 				#break;
 				x = x + dA
 			xAxis = numpy.arange(start_angle,x,dA)
 			counter+=1
+			
+			plt.subplot(211)
 			plt.plot(xAxis, arr)
-	print counter
+			plt.subplot(212)
+			plt.plot(arr_y, arr_x)
+	print x
 	plt.show()
 			#break
 			
