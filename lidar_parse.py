@@ -44,10 +44,7 @@ with open(txtFile, 'r') as infile:
 			for word in range_data.split(" "):	
 				arr.append( (float(word.strip())) )
 				arr_x.append( (float(word.strip())) *math.cos(x) )
-				arr_y.append( (float(word.strip())) *math.sin(x) )
-				#arr.insert(0, (float(word.strip())) )
-				#arr_x.insert(0, (float(word.strip())) *math.cos(x) )
-				#arr_y.insert(0, (float(word.strip())) *math.sin(x) )
+				arr_y.append( (float(word.strip())) *math.sin(x) ) 
 				#print arr
 				#break;
 				x = x + dA
