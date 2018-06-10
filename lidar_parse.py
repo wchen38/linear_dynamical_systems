@@ -17,15 +17,22 @@ dA = 0.00436332309619
 
 
 
-row = 0
-col = 0
+
+index = 0
+a_mat = numpy.ones(shape=(51, 3))
+y_mat = numpy.ones(shape=(51, 1))
+xc=0 #cylindrial form
+yc=0 #cylindrial form
+
 fig = plt.figure()
 fig.suptitle('cylindrical coordinate', fontsize=14, fontweight='bold')
 
 ax = fig.add_subplot(111)
 ax.set_xlabel('x')
 ax.set_ylabel('y')
-counter = 0;
+sample_rate = 1;
+SAMPLE_RANGE = 51
+
 plt.figure(1)
 with open(txtFile, 'r') as infile:
 	#scans each line of the file to look for keywords
@@ -43,21 +50,34 @@ with open(txtFile, 'r') as infile:
 			#store all the data seperated by a space in an array
 			for word in range_data.split(" "):	
 				arr.append( (float(word.strip())) )
-				arr_x.append( (float(word.strip())) *math.cos(x) )
-				arr_y.append( (float(word.strip())) *math.sin(x) ) 
+				xc = (float(word.strip())) *math.cos(x)
+				yc = (float(word.strip())) *math.sin(x)
+				arr_x.append(xc)
+				arr_y.append(yc) 
 				#print arr
-				#break;
 				x = x + dA
+				if sample_rate == SAMPLE_RANGE:
+					break
+				sample_rate+= 1;
 			xAxis = numpy.arange(start_angle,x,dA)
-			counter+=1
-			
 			plt.subplot(211)
 			plt.plot(xAxis, arr)
 			plt.subplot(212)
 			plt.plot(arr_y, arr_x)
-	print x
+			
+			for row in range(len(arr_x)):
+				for col in range(3):
+					a_mat[row][col] =  a_mat[row][col] * arr_x[row];
+				y_mat[row] = arr_x[row];
+			break; #stop after one full scan 
+			
+	print y_mat
+	print numpy.shape(a_mat) 
+	print numpy.shape(y_mat)
+	
 	plt.show()
-			#break
+	
+	
 			
 			
 			
