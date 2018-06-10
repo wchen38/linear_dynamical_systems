@@ -1,4 +1,4 @@
-import xlsxwriter, matplotlib.pyplot as plt, numpy, decimal, math
+import xlsxwriter, matplotlib.pyplot as plt, numpy, decimal, math, csv
 from array import array
 
 
@@ -36,13 +36,15 @@ SAMPLE_RANGE = 51
 tmp = 1
 i= 0
 plt.figure(1)
+
+lol = []
 with open(txtFile, 'r') as infile:
 	#scans each line of the file to look for keywords
 	for line in infile:
 		x = start_angle
-		arr = array('f')
-		arr_x = array('f')
-		arr_y = array('f')
+		arr = []
+		arr_x = []
+		arr_y = []
 		#detect the key word range, which is the data I want to parse.
 		if 'ranges:' in line:
 			
@@ -51,66 +53,34 @@ with open(txtFile, 'r') as infile:
 			
 			#store all the data seperated by a space in an array
 			for word in range_data.split(" "):	
-					if index >= 0:
-						arr.append( (float(word.strip())) )
-						xc = (float(word.strip())) *math.cos(x)
-						yc = (float(word.strip())) *math.sin(x)
-						arr_x.append(xc)
-						arr_y.append(yc) 
-						#print arr
-						x = x + dA
-						if sample_rate == SAMPLE_RANGE:
-							break
-						sample_rate+= 1;
-					index = index + 1
+					
+				arr.append( (float(word.strip())) )
+				xc = (float(word.strip())) *math.cos(x)
+				yc = (float(word.strip())) *math.sin(x)
+				arr_x.append(xc)
+				arr_y.append(yc) 
+				#print arr
+				x = x + dA
+			lol.append(arr)		
 			xAxis = numpy.arange(start_angle,x,dA)
+			#break; #stop after one full scan 
 			
-			plt.plot(xAxis, arr)
-			plt.xlabel('Angle (radians)')
-			plt.ylabel('Distance (m)')
-			
-			plt.figure()
-			
-			
-			plt.plot(arr_y, arr_x)
-			plt.xlabel('x')
-			plt.ylabel('y')
-			plt.title('cartesian')
-			
-			
-			#performing LS solution
-			for row in range(len(arr_x)):
-				for col in range(3):
-					if i <= 1:
-						a_mat[row][col] =  tmp * arr[row];
-						tmp = a_mat[row][col];
-						#print i
-						i = i+1
-					else:
-						tmp = 1;
-						i = 0
-						a_mat[row][col] = 1
-				y_mat[row] = arr_y[row];
-			break; #stop after one full scan 
+list1 = [1, 2, 3]
+list2 = [5, 6 , 7]
+myData = [[1, 2, 3], ['Good Morning', 'Good Evening', 'Good Afternoon']]
+
+with open('csvtest.csv', 'wb') as f:
+	writer = csv.writer(f, delimiter = ',')
+	writer.writerows(lol)	
+
+#myFile = open('csvtest', 'w')
+#with myFile:
+#	writer = csv.writer(myFile)
+#	writer.writerows(myData.tolist())
 	
-	#print numpy.shape(a_mat) 
-	#print numpy.shape(y_mat)
-	#print a_mat
 	
-	aT = numpy.transpose(a_mat)
-	dotp = aT.dot(a_mat)
-	mat = numpy.matrix(dotp)
-	inverse = mat.I
-	x_hat = (inverse.dot(aT)).dot(y_mat)
-	#print x_hat
-	output = a_mat.dot(x_hat)
-	#print numpy.shape(output)
-	plt.figure()
-	plt.plot(output, arr_x)
-	plt.xlabel('x')
-	plt.ylabel('y')
-	plt.title('cartesian LS')
-	plt.show()
+	
+
 	
 	
 			
