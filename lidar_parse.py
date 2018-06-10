@@ -21,6 +21,7 @@ dA = 0.00436332309619
 index = 0
 a_mat = numpy.ones(shape=(51, 3))
 y_mat = numpy.ones(shape=(51, 1))
+x_hat = numpy.ones(shape=(3, 1))
 xc=0 #cylindrial form
 yc=0 #cylindrial form
 
@@ -32,7 +33,8 @@ ax.set_xlabel('x')
 ax.set_ylabel('y')
 sample_rate = 1;
 SAMPLE_RANGE = 51
-
+tmp = 1
+i= 1
 plt.figure(1)
 with open(txtFile, 'r') as infile:
 	#scans each line of the file to look for keywords
@@ -67,14 +69,29 @@ with open(txtFile, 'r') as infile:
 			
 			for row in range(len(arr_x)):
 				for col in range(3):
-					a_mat[row][col] =  a_mat[row][col] * arr_x[row];
+					if i <= 2:
+						a_mat[row][col] =  tmp * arr_x[row];
+						tmp = a_mat[row][col];
+						i = i+1
+					else:
+						i = 1
+						a_mat[row][col] = 1
 				y_mat[row] = arr_x[row];
 			break; #stop after one full scan 
 			
-	print y_mat
-	print numpy.shape(a_mat) 
-	print numpy.shape(y_mat)
+	#print numpy.shape(a_mat) 
+	#print numpy.shape(y_mat)
 	
+	aT = numpy.transpose(a_mat)
+	dotp = aT.dot(a_mat)
+	mat = numpy.matrix(dotp)
+	inverse = mat.I
+	x_hat = (inverse.dot(aT)).dot(y_mat)
+	print x_hat
+	output = a_mat.dot(x_hat)
+	print numpy.shape(output)
+	plt.figure()
+	plt.plot(output, arr_x)
 	plt.show()
 	
 	
