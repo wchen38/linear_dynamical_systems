@@ -64,10 +64,19 @@ with open(txtFile, 'r') as infile:
 						sample_rate+= 1;
 					index = index + 1
 			xAxis = numpy.arange(start_angle,x,dA)
-			plt.subplot(211)
+			
 			plt.plot(xAxis, arr)
-			plt.subplot(212)
+			plt.xlabel('Angle (radians)')
+			plt.ylabel('Distance (m)')
+			
+			plt.figure()
+			
+			
 			plt.plot(arr_y, arr_x)
+			plt.xlabel('x')
+			plt.ylabel('y')
+			plt.title('cartesian')
+			
 			
 			#performing LS solution
 			for row in range(len(arr_x)):
@@ -87,6 +96,7 @@ with open(txtFile, 'r') as infile:
 	#print numpy.shape(a_mat) 
 	#print numpy.shape(y_mat)
 	#print a_mat
+	
 	aT = numpy.transpose(a_mat)
 	dotp = aT.dot(a_mat)
 	mat = numpy.matrix(dotp)
@@ -97,6 +107,9 @@ with open(txtFile, 'r') as infile:
 	#print numpy.shape(output)
 	plt.figure()
 	plt.plot(output, arr_x)
+	plt.xlabel('x')
+	plt.ylabel('y')
+	plt.title('cartesian LS')
 	plt.show()
 	
 	
