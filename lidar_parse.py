@@ -34,7 +34,7 @@ ax.set_ylabel('y')
 sample_rate = 1;
 SAMPLE_RANGE = 51
 tmp = 1
-i= 1
+i= 0
 plt.figure(1)
 with open(txtFile, 'r') as infile:
 	#scans each line of the file to look for keywords
@@ -51,45 +51,50 @@ with open(txtFile, 'r') as infile:
 			
 			#store all the data seperated by a space in an array
 			for word in range_data.split(" "):	
-				arr.append( (float(word.strip())) )
-				xc = (float(word.strip())) *math.cos(x)
-				yc = (float(word.strip())) *math.sin(x)
-				arr_x.append(xc)
-				arr_y.append(yc) 
-				#print arr
-				x = x + dA
-				if sample_rate == SAMPLE_RANGE:
-					break
-				sample_rate+= 1;
+					if index >= 0:
+						arr.append( (float(word.strip())) )
+						xc = (float(word.strip())) *math.cos(x)
+						yc = (float(word.strip())) *math.sin(x)
+						arr_x.append(xc)
+						arr_y.append(yc) 
+						#print arr
+						x = x + dA
+						if sample_rate == SAMPLE_RANGE:
+							break
+						sample_rate+= 1;
+					index = index + 1
 			xAxis = numpy.arange(start_angle,x,dA)
 			plt.subplot(211)
 			plt.plot(xAxis, arr)
 			plt.subplot(212)
 			plt.plot(arr_y, arr_x)
 			
+			#performing LS solution
 			for row in range(len(arr_x)):
 				for col in range(3):
-					if i <= 2:
-						a_mat[row][col] =  tmp * arr_x[row];
+					if i <= 1:
+						a_mat[row][col] =  tmp * arr[row];
 						tmp = a_mat[row][col];
+						#print i
 						i = i+1
 					else:
-						i = 1
+						tmp = 1;
+						i = 0
 						a_mat[row][col] = 1
-				y_mat[row] = arr_x[row];
+				y_mat[row] = arr_y[row];
 			break; #stop after one full scan 
-			
+	
 	#print numpy.shape(a_mat) 
 	#print numpy.shape(y_mat)
-	
+	#print a_mat
 	aT = numpy.transpose(a_mat)
 	dotp = aT.dot(a_mat)
 	mat = numpy.matrix(dotp)
 	inverse = mat.I
 	x_hat = (inverse.dot(aT)).dot(y_mat)
-	print x_hat
+	#print x_hat
 	output = a_mat.dot(x_hat)
-	print numpy.shape(output)
+	#print numpy.shape(output)
 	plt.figure()
 	plt.plot(output, arr_x)
 	plt.show()
