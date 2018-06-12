@@ -1,10 +1,5 @@
 clear all
 clc
-%ball data points start at 305 end at 440
-start = 305;
-N = 440;
-
-diff = abs(N-start) + 1;
 
 
 filename1 = './ballStillData/lidar_ball_still.csv'
@@ -14,15 +9,18 @@ position = csvread(filename1);
 S = position(1,:);         %all the yc axis data from csv file
 angle =[ -1.57079637051:0.00436332309619:1.56643295288];
 
-%yc = [-10:2:16]';
-%xc = [0.0434,0.0530,0.0045,0.0079,0.0033,0.0009,0.0006,0.026,0.0067,0.0530,0.0213,0.0317,0.0940,0.0180]';
+%ball data points start at 305 end at 440
+start = 305;
+N = 440;
 
- xc = S.*cos(angle);
- yc = S.*sin(angle);
+resSum = 0;
 
-plot(angle, S);
+xc = S.*cos(angle);
+yc = S.*sin(angle);
+
+plot(angle, S, '*');
 xlabel('angle'), ylabel('S'); 
-title('Cylindrial Measurement Data')
+title('Cylindrial Measurement Data before Trimming')
 figure 
 
 S = S(1,start:N);
@@ -45,10 +43,26 @@ plot(yc, xc, '*');  hold on
 A = [lastCol yc yc.^2];
 xhat = A\xc;
 xc_est = A*xhat;
-
-res = xc - xc_est;
-
 plot(yc, xc_est);
+leg_est=sprintf('Estimated (y=%.4f+%.4fx+%.4fx^2',xc_est(1),xc_est(2),xc_est(3))
+legend('Data',leg_est)
+
+
+res =(xc - xc_est).^2;
+for k=1:length(res)
+    resSum = resSum + res(k);
+end
+
+aveSum = resSum/length(res);
+
+keySet = {0.000900001 0.000900002};
+valueSet = {1 2};
+
+key = 0.000900001;
+
+M = containers.Map(keySet, valueSet);
+
+M(key)
 
 
 
