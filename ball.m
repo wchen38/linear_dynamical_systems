@@ -2,14 +2,14 @@ clear all
 clc
 
 
-filename1 = './ballStillData/lidar_ball_still.csv'
+filename1 = './ballStillData/parallelroll.csv'
 position = csvread(filename1);
 
 
 
-S = position(1,:);         %all the yc axis data from csv file
+S = position(25,:);         %all the yc axis data from csv file
 angle =[ -1.57079637051:0.00436332309619:1.56643295288];
-
+angle = angle(1, :)
 %ball data points start at 305 end at 440
 start = 303;
 N = 442;
@@ -29,7 +29,7 @@ title('Cylindrial Measurement Data before Trimming')
 S = S';
 angle = angle';
 
-step = 137;%abs(start-N);
+step = 49;%abs(start-N);
 
 for index=1:1:length(S)
     resSum = 0;
@@ -98,7 +98,7 @@ function [xcT,xcT_est] = myFunc(Strim, angleTrim)
     xhat = A\xcT;
     xcT_est = A*xhat;
     %pause(0.5);
-    plot(ycT, xcT_est, '--o');
+    plot(ycT, xcT_est);
     leg_est=sprintf('Estimated (y=%.4f+%.4fx+%.4fx^2',xcT_est(1),xcT_est(2),xcT_est(3))
     legend('Data',leg_est)
 end
