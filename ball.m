@@ -4,81 +4,93 @@ clc
 
 filename1 = './ballStillData/parallelroll.csv'
 position = csvread(filename1);
+[row col] = size(position);
 
-
-
-S = position(25,:);         %all the yc axis data from csv file
 angle =[ -1.57079637051:0.00436332309619:1.56643295288];
-angle = angle(1, :)
+angle = angle(1, :);
 %ball data points start at 305 end at 440
 start = 303;
 N = 442;
-res = 0;
-xc_est = zeros(3,1);
-resSum = 0;
-count = 0;
-aveSumRec = [];
-countRec = [];
-xc = S.*cos(angle);
-yc = S.*sin(angle);
 
-plot(yc, xc); hold on
-xlabel('x'), ylabel('y');
-title('Cylindrial Measurement Data before Trimming')
 
-S = S';
-angle = angle';
 
-step = 49;%abs(start-N);
-
-for index=1:1:length(S)
+for k=1:10:row
+    
+    aveSumRec = [];
+    countRec = [];
+    S = position(k,:);         %all the yc axis data from csv file
+    res = 0;
+    xc_est = zeros(3,1);
     resSum = 0;
-    if(index+step >= length(S))
-        break;
-    end 
-    Strim = S(index:index+step, 1);
-    angleTrim = angle(index:index+step, 1);
+    count = 0;
+    xc = S.*cos(angle);
+    yc = S.*sin(angle);
+   
+    plot(yc, xc); hold on
+    %
+    % plot(yc, xc); hold on
+    % xlabel('x'), ylabel('y');
+    % title('Cylindrial Measurement Data before Trimming')
     
-    %calculate the least squares
-    [xcT,xcT_est] = myFunc(Strim, angleTrim);
+    sT = S';
+    angleT = angle';
     
-    %find the average sum of residual
-    res =(xcT - xcT_est).^2;
-    for k=1:length(res)
-        resSum = resSum + res(k);
+    step = 49;%abs(start-N);
+    
+    for index=1:1:length(S)
+        resSum = 0;
+        if(index+step >= length(S))
+            break;
+        end
+        Strim = sT(index:index+step, 1);
+        angleTrim = angleT(index:index+step, 1);
+        
+        %calculate the least squares
+        [xcT, ycT, xcT_est] = myFunc(Strim, angleTrim);
+        
+        %find the average sum of residual
+        res =(xcT - xcT_est).^2;
+        for k=1:length(res)
+            resSum = resSum + res(k);
+        end
+        aveSum = resSum/length(res);
+        aveSumRec = [aveSumRec aveSum];
+        
+        count = count + 1;
+        countRec = [countRec count];
+        
+        
+        
     end
-    aveSum = resSum/length(res);
-    aveSumRec = [aveSumRec aveSum];
     
-    count = count + 1;
-    countRec = [countRec count];
+    %match each residual to a counter
+    keySet = aveSumRec;
+    valueSet = countRec;
+    key = min(aveSumRec);
+    %M = containers.Map(keySet, valueSet);
     
     
+    pause(1);
+    %---------------find the ball -------------------------%
+    %loc_start = step*M(key) - step;
+    %loc_end = step*M(key);
+    loc_start = find(aveSumRec==key);
+    loc_end = loc_start + step;
+    
+   % figure
+    
+   
+   Strim = sT(loc_start:loc_end, 1);
+   angleTrim = angleT(loc_start:loc_end, 1);
+   [xcT,ycT,xcT_est] = myFunc(Strim, angleTrim);
+  
+   plot(ycT, xcT_est, '*');
+    pause(0.5);
+   %leg_est=sprintf('Estimated (y=%.4f+%.4fx+%.4fx^2',xcT_est(1),xcT_est(2),xcT_est(3));
+   legend('Data','est')
+   clf('reset')
     
 end
-
-%match each residual to a counter
-keySet = aveSumRec;
-valueSet = countRec;
-key = min(aveSumRec);
-%M = containers.Map(keySet, valueSet);
-
-
-pause(1);
-%---------------find the ball -------------------------%
-%loc_start = step*M(key) - step;
-%loc_end = step*M(key);
-loc_start = find(aveSumRec==key);
-loc_end = loc_start + step;
-
-figure 
-plot(yc, xc, '*'); hold on
-
-Strim = S(loc_start:loc_end, 1);
-angleTrim = angle(loc_start:loc_end, 1);
-[xcT,xcT_est] = myFunc(Strim, angleTrim)
-
-
 %--------------------works-----------------------------------
 % plot(yc, xc, '*');  hold on
 % A=[ones(length(yc),1) yc yc.^2];
@@ -88,17 +100,15 @@ angleTrim = angle(loc_start:loc_end, 1);
 % leg_est=sprintf('Estimated (y=%.4f+%.4fx+%.4fx^2',beta(1),beta(2),beta(3))
 % legend('Data',leg_est)
 
-function [xcT,xcT_est] = myFunc(Strim, angleTrim)
-    
-    xcT = Strim.*cos(angleTrim);
-    ycT = Strim.*sin(angleTrim);
-    lastCol = ones(length(ycT),1);
-    
-    A = [lastCol ycT ycT.^2];
-    xhat = A\xcT;
-    xcT_est = A*xhat;
-    %pause(0.5);
-    plot(ycT, xcT_est);
-    leg_est=sprintf('Estimated (y=%.4f+%.4fx+%.4fx^2',xcT_est(1),xcT_est(2),xcT_est(3))
-    legend('Data',leg_est)
+function [xcT,ycT,xcT_est] = myFunc(Strim, angleTrim)
+
+xcT = Strim.*cos(angleTrim);
+ycT = Strim.*sin(angleTrim);
+lastCol = ones(length(ycT),1);
+
+A = [lastCol ycT ycT.^2 ycT.^3];
+xhat = A\xcT;
+xcT_est = A*xhat;
+%pause(0.5);
+
 end
